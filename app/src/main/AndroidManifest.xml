@@ -13,7 +13,13 @@
         android:theme="@style/Theme.Cst438Project2">
         <activity
             android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".LoginScreen"
             android:exported="true"
+            android:label="@string/title_activity_login_screen"
+            android:theme="@style/Theme.Cst438Project2"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
