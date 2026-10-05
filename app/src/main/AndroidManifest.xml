@@ -21,6 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".LoginScreen"
+            android:exported="false"
+            android:label="@string/title_activity_login_screen"
+            android:theme="@style/Theme.Cst438Project2"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
