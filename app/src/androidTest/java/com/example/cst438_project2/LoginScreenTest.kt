@@ -3,9 +3,11 @@ package com.example.cst438_project2
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.cst438_project2.ui.theme.Cst438Project2Theme
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,50 +19,85 @@ class LoginScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun loginScreen_verifyAllUIElementsAreDisplayed() {
+    fun loginScreenShowsSignInOptions() {
         composeTestRule.setContent {
             Cst438Project2Theme {
                 LoginScreenContent()
             }
         }
 
-        // Verify titles are displayed
         composeTestRule.onNodeWithText("Fitness App").assertIsDisplayed()
-        
-        // Verify text fields are displayed by checking their labels
-        composeTestRule.onNodeWithText("Username").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sign in to see your workouts").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Email").assertIsDisplayed()
         composeTestRule.onNodeWithText("Password").assertIsDisplayed()
-        
-        // Verify the sign-up button is displayed
-        composeTestRule.onNodeWithText("Don't have an account? Sign up").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sign in with email").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sign in with Google").assertIsDisplayed()
     }
 
     @Test
-    fun loginScreen_canInputUsername() {
+    fun emailButtonCallsSignInWithEnteredCredentials() {
+        var enteredEmail = ""
+        var enteredPassword = ""
+
         composeTestRule.setContent {
             Cst438Project2Theme {
-                LoginScreenContent()
+                LoginScreenContent(
+                    onEmailPasswordSignIn = { email, password ->
+                        enteredEmail = email
+                        enteredPassword = password
+                    }
+                )
             }
         }
 
-        // Input text into username field
-        composeTestRule.onNodeWithText("Username").performTextInput("testuser")
-        
-        // Verify the typed text is displayed
-        composeTestRule.onNodeWithText("testuser").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Email").performTextInput("user@example.com")
+        composeTestRule.onNodeWithText("Password").performTextInput("password123")
+        composeTestRule.onNodeWithText("Sign in with email").performClick()
+
+        composeTestRule.runOnIdle {
+            assertTrue(enteredEmail == "user@example.com")
+            assertTrue(enteredPassword == "password123")
+        }
     }
-    
+
     @Test
-    fun loginScreen_canInputPassword() {
+    fun googleButtonCallsSignIn() {
+        var signInCalled = false
+
         composeTestRule.setContent {
             Cst438Project2Theme {
-                LoginScreenContent()
+                LoginScreenContent(
+                    onGoogleSignInClick = { signInCalled = true }
+                )
             }
         }
 
-        // Input text into password field
-        // Since it's a password field, visually the text transforms to dots, 
-        // but performTextInput validates that the UI can receive the characters.
-        composeTestRule.onNodeWithText("Password").performTextInput("securepassword")
+        composeTestRule.onNodeWithText("Sign in with Google").performClick()
+
+        composeTestRule.runOnIdle {
+            assertTrue(signInCalled)
+        }
+    }
+
+    @Test
+    fun loginScreenDisplaysSignInError() {
+        composeTestRule.setContent {
+            Cst438Project2Theme {
+                LoginScreenContent(errorMessage = "Google sign-in failed")
+            }
+        }
+
+        composeTestRule.onNodeWithText("Google sign-in failed").assertIsDisplayed()
+    }
+
+    @Test
+    fun homeScreenShowsWelcomeMessage() {
+        composeTestRule.setContent {
+            Cst438Project2Theme {
+                HomeScreen(displayName = "Alex")
+            }
+        }
+
+        composeTestRule.onNodeWithText("Welcome, Alex!").assertIsDisplayed()
     }
 }
